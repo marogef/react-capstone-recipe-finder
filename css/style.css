@@ -1,6 +1,6 @@
 html {
 	box-sizing: border-box;
-	background: url(../images/background.jpg) no-repeat center center fixed; 
+	background: url("../assets/images/background.jpg") no-repeat center center fixed; 
 	-webkit-background-size: cover;
 	-moz-background-size: cover;
 	-o-background-size: cover;
@@ -21,7 +21,7 @@ body {
 #wrapper {
 	max-width: 62rem;
 	margin: 2rem auto 5rem auto;
-	background: url("../images/transparent.jpg");
+	background: url("../assets/images/transparent.jpg");
 	border-radius: 0.5rem;
 }
 
