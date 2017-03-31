@@ -1,6 +1,6 @@
 html {
 	box-sizing: border-box;
-	background: url("../assets/images/background.jpg") no-repeat center center fixed; 
+	background: url("../assets/images/Recipes-Hero.jpg") no-repeat center center fixed; 
 	-webkit-background-size: cover;
 	-moz-background-size: cover;
 	-o-background-size: cover;
@@ -12,9 +12,6 @@ body {
 	margin: 0 auto;
 	text-align: center;
 }
-
-
-
 
 /* Setting the transparent background to the wrapper */
 
@@ -117,10 +114,6 @@ body {
 .input-section .search:hover {
 	cursor: pointer;
 }
-
-
-
-
 /* Recipe List CSS */
 
 .recipe-list {

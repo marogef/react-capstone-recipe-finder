@@ -29,7 +29,7 @@ var showError = function(error){
 var getRecipe = function(keyword,cuisine) {
 	
 	var result = $.ajax({
-		url: "http://api.yummly.com/v1/api/recipes?_app_id=6d9e22ab&_app_key=e4270a20949b90bf9cca1017d935f12b&q=" + keyword + "&allowedCuisine[]=cuisine^cuisine-" + cuisine + "&requirePictures=true",
+		url: "https://crossorigin.me/http://api.yummly.com/v1/api/recipes?_app_id=6d9e22ab&_app_key=e4270a20949b90bf9cca1017d935f12b&q=" + keyword + "&allowedCuisine[]=cuisine^cuisine-" + cuisine + "&requirePictures=true",
 		dataType: "jsonp",
 		type: "GET"
 		})
