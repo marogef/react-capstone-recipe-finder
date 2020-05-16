@@ -1,97 +1,53 @@
-// mouse event functions
-
-function getRecipes() {
-  const url = getUrl();
-  
-  $.get(url).done(function(data){
-    if(data.count > 0) {
-      data.hits.forEach((hit) => { 
-        const recipeItems = recipeItemTemplate(hit);
-        const eachRecipe = recipeTemplate(hit.recipe.url, hit.recipe.label, recipeItems, hit.recipe.calories, hit.recipe.yield);
-        $('.recipes').append(eachRecipe);
-       });
-    }else if(data.count === 0){
-      displayError();
-    }
-  }).fail(function(data){
-    console.log(data);
-    displayError();
-  });
-  
-  resetQuery();
-}
-
-$('ul').on( "mouseover", "li", function() {
-    $(this).children().fadeIn();
+$(document).ready( function() {
+	$('#searchButton').on('click', function (event) {
+	    event.preventDefault();
+	    var keyword = $('#ingredient').val();
+	    var cuisine = $('#cuisine-name').val();
+	    recipeValidation(keyword,cuisine);
+	});
 });
 
-
-// helper methods
-function clearElements(elements){
-  elements.map( (element) => {
-    let mySelector = $("." + element);
-    mySelector.is('input') ? 
-      mySelector.val('') 
-            : 
-      mySelector.empty();
-  });
+var recipeValidation = function(keyword,cuisine) {
+	if ((keyword == '') && (cuisine == null)) {
+	   	alert('Please enter something in the text box and try again!');
+	    $('.recipe-details').html('');
+	    return false;
+	} else {
+		getRecipe(keyword,cuisine);
+	}
 }
 
-function getUrl() {
-  const id = "54d5d928";
-  const key = "bd794a4c8694121da1a2bfe15bdf0537";
-  const health =$("input:radio[name='health']:checked").val(); 
-  const query = $('.query').val();
-  const limit = $('.limit').val();
-  const url = `https://api.edamam.com/search?q=${query}` + 
-              `&app_id=${id}` +
-              `&app_key=${key}` +
-              `&from=0&to=${limit}` +
-              `&health=${health}`;
-  return url;
+// takes error string and turns it into displayable DOM element
+var showError = function(error){
+	var errorElem = $('.templates .error').clone();
+	var errorText = '<p>' + error + '</p>';
+	errorElem.append(errorText);
 }
 
-function displayError(){
-  $('#error_message').addClass('error');
-  $('.error').text("No Results Found");
-  $('.error').fadeIn("slow");
+// takes a string of semi-colon separated tags to be searched
+// for on StackOverflow
+var getRecipe = function(keyword,cuisine) {
+	
+	var result = $.ajax({
+		url: "https://crossorigin.me/http://api.yummly.com/v1/api/recipes?_app_id=6d9e22ab&_app_key=e4270a20949b90bf9cca1017d935f12b&q=" + keyword + "&allowedCuisine[]=cuisine^cuisine-" + cuisine + "&requirePictures=true",
+		dataType: "jsonp",
+		type: "GET"
+		})
+	.done(function(result){
+		$('.recipe-details').html('');
+		$.each(result.matches, function(i, matches) {
+			var recipe = '<li><div class="recipe-image"><img src="' +
+							matches.imageUrlsBySize[90] + '" alt="Recipe image" width="170"></div><div class="recipe-description"><p>' +
+							matches.sourceDisplayName + '</p><p><a target="_blank" href=https://www.yummly.com/recipe/' +
+							matches.id + ' >' + matches.recipeName + '</a></p><p>Cooking time: ' + 
+							matches.totalTimeInSeconds/60 + ' minutes</p><p>Rating: ' + 
+							matches.rating + '</p></div></li>';
+			$('.recipe-details').append(recipe);
+		});
+	})
+	.fail(function(jqXHR, error, errorThrown){
+		var errorElem = showError(error);
+		$('.search-results').append(errorElem);
+	});
 }
 
-function resetQuery(){
-  clearElements(['recipes', 'limit', 'query', 'error']);
-  $('#error_message').removeClass('error');
-}
-
-function recipeTemplate(rUrl, rLabel, rItems, rCalories, rYield){
-  const eachRecipe = '<li class="recipe">'+ 
-                     '<span class="recipeName">' +
-                     '<a href="' +
-                        rUrl +
-                     '" target="_blank">' +
-                        rLabel + 
-                     '</a>' +
-                     '</span>' +
-                     '<span class="servings">' +
-                      'Servings: ' +
-                       rYield +
-                     '</span>' +
-                      '<br/>' +
-                     '<span class="calories">' +
-                      'Calories per serving: ' +
-                       (rCalories/rYield).toFixed(0) +
-                     '</span>' +
-                     '<br/>' +
-                     '<span class="ingreds">' +
-                       rItems +
-                     '</span>' +
-                     '</li>';
-  return eachRecipe;
-}
-
-function recipeItemTemplate(hit) {
-  let recipeItems = '';
-  $.each(hit.recipe.ingredientLines, function( index, value ) {
-    recipeItems +='<br/>' + value + '<br/>';
-  });
-  return recipeItems;
-}
